@@ -1,0 +1,46 @@
+{% extends 'layout.html' %}
+
+{% block title %}貸出・返却{% endblock %}
+
+{% block header %}
+<h1>貸出履歴</h1>
+{% endblock %}
+
+{% block content %}
+<table>
+    <thead>
+        <tr>
+            <th>書籍タイトル</th>
+            <th>貸出日</th>
+            <th>返却期限</th>
+            <th>返却日 / ステータス</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for loan in loans %}
+        <tr>
+            <td>{{ loan['title'] }}</td>
+            <td>{{ loan['loan_date'] }}</td>
+            <td>{{ loan['return_deadline'] }}</td>
+            <td>
+                {% if loan['return_date'] %}
+                {{ loan['return_date'] }}
+                {% else %}
+                <span style="color: red; font-weight: bold;">貸出中</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if not loan['return_date'] %}
+                <form action="{{ url_for('loans.return_book', loan_id=loan['id']) }}" method="post">
+                    <input type="submit" value="返却する">
+                </form>
+                {% else %}
+                -
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

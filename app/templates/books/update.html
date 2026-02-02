@@ -1,0 +1,32 @@
+{% extends 'layout.html' %}
+
+{% block title %}書籍編集 "{{ book['title'] }}"{% endblock %}
+
+{% block content %}
+<h1>書籍編集: {{ book['title'] }}</h1>
+
+<form method="post">
+    <label for="title">タイトル</label>
+    <input name="title" id="title" value="{{ request.form['title'] or book['title'] }}" required>
+
+    <label for="isbn">ISBN</label>
+    <input name="isbn" id="isbn" value="{{ request.form['isbn'] or book['isbn'] }}" required>
+
+    <label for="author">著者</label>
+    <input name="author" id="author" value="{{ request.form['author'] or book['author'] }}">
+
+    <label for="publisher">出版社</label>
+    <input name="publisher" id="publisher" value="{{ request.form['publisher'] or book['publisher'] }}">
+
+    <label for="stock_count">在庫数</label>
+    <input name="stock_count" id="stock_count" type="number"
+        value="{{ request.form['stock_count'] or book['stock_count'] }}" required>
+
+    <input type="submit" value="保存">
+</form>
+
+<hr>
+<form action="{{ url_for('books.delete', id=book['id']) }}" method="post">
+    <input class="danger" type="submit" value="削除" onclick="return confirm('本当に削除しますか？');">
+</form>
+{% endblock %}

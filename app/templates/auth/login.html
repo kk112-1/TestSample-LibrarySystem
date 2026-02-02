@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+
+{% block title %}ログイン{% endblock %}
+
+{% block content %}
+  <h2>ログイン</h2>
+  <form method="post">
+    <label for="username">ユーザー名</label>
+    <input name="username" id="username" required>
+    <label for="password">パスワード</label>
+    <input type="password" name="password" id="password" required>
+    <input type="submit" value="ログイン">
+  </form>
+{% endblock %}

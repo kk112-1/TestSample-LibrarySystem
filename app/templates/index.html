@@ -1,0 +1,12 @@
+{% extends 'layout.html' %}
+
+{% block title %}ホーム{% endblock %}
+
+{% block content %}
+<h2>ホーム</h2>
+<p>図書管理システムへようこそ。</p>
+<ul>
+    <li><a href="{{ url_for('books.index') }}">書籍一覧</a></li>
+    <li><a href="{{ url_for('loans.index') }}">貸出管理</a></li>
+</ul>
+{% endblock %}

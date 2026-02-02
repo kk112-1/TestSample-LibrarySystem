@@ -1,0 +1,61 @@
+{% extends 'layout.html' %}
+
+{% block title %}書籍一覧{% endblock %}
+
+{% block header %}
+<h1>書籍一覧</h1>
+{% if g.user and g.user['role'] == 'admin' %}
+<a class="action" href="{{ url_for('books.create') }}">書籍登録</a>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<form method="get" class="search-form">
+    <input type="text" name="q" value="{{ query }}" placeholder="検索キーワード (タイトル, ISBN, 著者)">
+    <input type="submit" value="検索">
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>タイトル</th>
+            <th>著者</th>
+            <th>出版社</th>
+            <th>ISBN</th>
+            <th>在庫数</th>
+            {% if g.user %}
+            <th>操作</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for book in books %}
+        <tr>
+            <td>{{ book['id'] }}</td>
+            <td>{{ book['title'] }}</td>
+            <td>{{ book['author'] }}</td>
+            <td>{{ book['publisher'] }}</td>
+            <td>{{ book['isbn'] }}</td>
+            <td>{{ book['stock_count'] }}</td>
+            <td>
+                {% if g.user %}
+                <div style="display: flex; gap: 0.5rem;">
+                    {% if g.user['role'] == 'admin' %}
+                    <a href="{{ url_for('books.update', id=book['id']) }}">編集</a>
+                    {% endif %}
+                    {% if book['stock_count'] > 0 %}
+                    <form action="{{ url_for('loans.borrow', book_id=book['id']) }}" method="post" style="margin: 0;">
+                        <input type="submit" value="借" style="min-width: auto; padding: 0.2rem 0.5rem;">
+                    </form>
+                    {% else %}
+                    <span style="color: gray;">在庫なし</span>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

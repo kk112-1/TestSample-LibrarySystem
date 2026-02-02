@@ -1,2 +1,66 @@
-# TestSample-LibrarySystem
-ソフトウェアテストカリキュラムの課題
+# 図書管理システム (演習用サンプルアプリケーション)
+
+ソフトウェアテストおよび品質保証の演習用教材として作成された、Python + Flask 製のWebアプリケーションです。
+意図的に不具合（バグ）を混入させたバージョンを作成することで、バグ検出や不具合報告のトレーニングを行うことができます。
+
+## システム概要
+基本的な図書管理機能（貸出、返却、検索、在庫管理）を備えています。
+教育用のため、以下の2つのバージョン（ブランチ）で構成されます。
+
+1.  **`main` ブランチ**: バグのない正常な完成形。仕様の正解基準となります。
+2.  **`feature/buggy-version` ブランチ**: 演習用に「仕込みバグ」を実装したバージョン。
+
+## 動作環境
+- Windows / Mac / Linux
+- Python 3.8 以上
+- SQLite3 (Python標準ライブラリ)
+
+## セットアップ手順
+
+### 1. リポジトリのクローン
+```bash
+git clone <repository-url>
+cd TestSample-LibrarySystem
+```
+
+### 2. 仮想環境の作成と有効化 (推奨)
+Windows (PowerShell):
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+```
+Mac/Linux:
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### 3. 依存ライブラリのインストール
+```bash
+pip install -r requirements.txt
+```
+
+### 4. データベースの初期化
+初回起動前、またはリセット時に実行してください。
+```bash
+python database.py init
+```
+
+### 5. アプリケーションの起動
+```bash
+python app.py
+```
+ブラウザで [http://127.0.0.1:5000](http://127.0.0.1:5000) にアクセスしてください。
+
+## ドキュメント
+
+プロジェクト関連ドキュメントは `doc/` フォルダに格納されています。
+
+*   **[ドキュメント一覧](doc/ドキュメント一覧.md)**: 演習に必要な資料のリスト
+*   **[システム、カリキュラム概要](doc/システム、カリキュラム概要.md)**: 教育カリキュラムの詳細
+*   **[GitHub Issue 利用ガイド](doc/github_issue_guide.md)**: バグ報告の方法
+*   **(講師用) [仕込みバグ一覧](doc/bug_list.md)**: 実装されているバグの正解リスト（※受講生閲覧注意）
+
+## ライセンス
+本ソフトウェアは教育目的で提供されています。
+演習利用の範囲で改変・再配布が可能です。

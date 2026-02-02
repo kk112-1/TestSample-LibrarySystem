@@ -1,0 +1,31 @@
+DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS book;
+DROP TABLE IF EXISTS loan;
+
+CREATE TABLE user (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  username TEXT UNIQUE NOT NULL,
+  password TEXT NOT NULL,
+  role TEXT NOT NULL DEFAULT 'user' -- 'admin' or 'user'
+);
+
+CREATE TABLE book (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL,
+  isbn TEXT NOT NULL,
+  author TEXT,
+  publisher TEXT,
+  stock_count INTEGER NOT NULL DEFAULT 1,
+  is_deleted BOOLEAN NOT NULL DEFAULT 0
+);
+
+CREATE TABLE loan (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  book_id INTEGER NOT NULL,
+  loan_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  return_deadline DATE NOT NULL,
+  return_date TIMESTAMP, -- NULLなら未返却
+  FOREIGN KEY (user_id) REFERENCES user (id),
+  FOREIGN KEY (book_id) REFERENCES book (id)
+);

@@ -1,0 +1,25 @@
+{% extends 'layout.html' %}
+
+{% block title %}書籍登録{% endblock %}
+
+{% block content %}
+<h1>書籍登録</h1>
+<form method="post">
+    <label for="title">タイトル</label>
+    <input name="title" id="title" value="{{ request.form['title'] }}" required>
+
+    <label for="isbn">ISBN</label>
+    <input name="isbn" id="isbn" value="{{ request.form['isbn'] }}" required>
+
+    <label for="author">著者</label>
+    <input name="author" id="author" value="{{ request.form['author'] }}">
+
+    <label for="publisher">出版社</label>
+    <input name="publisher" id="publisher" value="{{ request.form['publisher'] }}">
+
+    <label for="stock_count">在庫数</label>
+    <input name="stock_count" id="stock_count" type="number" value="1" required>
+
+    <input type="submit" value="登録">
+</form>
+{% endblock %}
