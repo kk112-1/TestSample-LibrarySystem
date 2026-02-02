@@ -17,6 +17,11 @@ def index():
     params = []
 
     if query:
+        # BUG: 検索文字列に特定の文字（' や %）が含まれるとシステムエラーを発生させる
+        if "'" in query or "%" in query:
+            # 意図的な500エラー
+            raise Exception("データベースエラー: SQL構文エラーが発生しました。")
+            
         # sql += ' AND (title LIKE ? OR isbn LIKE ? OR author LIKE ?)'
         sql += ' AND (title LIKE ? OR isbn LIKE ? OR author LIKE ?)'
         search_term = f'%{query}%'
@@ -104,20 +109,21 @@ def update(id):
 @admin_required
 def delete(id):
     db = get_db()
-    # Check for active loans before deleting
-    active_loan = db.execute(
-        'SELECT id FROM loan WHERE book_id = ? AND return_date IS NULL',
-        (id,)
-    ).fetchone()
+    # BUG: 貸出中のチェックを削除 (データ不整合バグ)
+    # active_loan = db.execute(
+    #     'SELECT id FROM loan WHERE book_id = ? AND return_date IS NULL',
+    #     (id,)
+    # ).fetchone()
     
-    if active_loan:
-        flash("削除できません: 貸出中のため削除できません。")
-        return redirect(url_for('books.index'))
+    # if active_loan:
+    #     flash("削除できません: 貸出中のため削除できません。")
+    #     return redirect(url_for('books.index'))
 
-    # Logical Deletion
-    db.execute('UPDATE book SET is_deleted = 1 WHERE id = ?', (id,))
+    # BUG: 論理削除ではなく物理削除を行い、関連レコードは削除しない (孤立レコード発生)
+    # Logical Deletion -> Reverted to Physical Deletion without cascade
+    db.execute('DELETE FROM book WHERE id = ?', (id,))
     
-    # NOTE: Loan history remains intact.
+    # NOTE: Loan history remains, becoming ORPHAN records because `book_id` no longer exists in book table.
     
     db.commit()
     return redirect(url_for('books.index'))

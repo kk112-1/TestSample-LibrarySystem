@@ -46,16 +46,16 @@ def borrow(book_id):
         (g.user['id'],)
     ).fetchone()[0]
 
-    if active_loans_count >= 5:
+    # BUG: 境界値バグ。5冊借りている状態で6冊目を許可してしまう (>= 5 ではなく > 5 に変更、または条件緩和)
+    if active_loans_count > 5: # Changed from >= 5
         flash("5冊以上同時に借りることはできません。")
         return redirect(url_for('books.index'))
 
     # 3. Process Borrowing
-    # Calculate deadline (e.g., 2 weeks later)
+    # Calculate deadline
+    # BUG: 単純に14日後とし、土日祝の考慮を行わない。
     deadline = date.today() + timedelta(days=14)
-    if deadline.weekday() >= 5: # 5=Saturday, 6=Sunday
-        days_to_add = 7 - deadline.weekday() # If Sat(5) -> +2=Mon(0). If Sun(6) -> +1=Mon(0).
-        deadline += timedelta(days=days_to_add)
+    # if deadline.weekday() >= 5: ... (Removed weekend check)
 
     db.execute(
         'INSERT INTO loan (user_id, book_id, return_deadline) VALUES (?, ?, ?)',
@@ -87,6 +87,17 @@ def return_book(loan_id):
 
     if loan['return_date'] is not None:
         flash("既に返却済みです。")
+        return redirect(url_for('loans.index'))
+
+    # BUG: 返却時になぜか在庫数チェックを行い、もし在庫管理ミスで0になっていたら返却できない
+    # （本来返却は在庫を増やす行為なので、今の在庫が0でも関係ないはず）
+    book = db.execute('SELECT stock_count FROM book WHERE id = ?', (loan['book_id'],)).fetchone()
+    if book and book['stock_count'] < 0: 
+        pass 
+    
+    # "在庫0時の返却エラー: 貸出中にその本の在庫数を管理画面から0に変更した際に、返却処理が正常にできるか。"
+    if book and book['stock_count'] == 0:
+        flash("システムエラー: 在庫数が異常(0)のため、返却処理を続行できません。")
         return redirect(url_for('loans.index'))
 
     # Process Return
